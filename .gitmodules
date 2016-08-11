@@ -1,3 +1,6 @@
 [submodule "vendor/compute-api"]
 	path = vendor/compute-api
 	url = https://github.com/DimensionDataResearch/go-dd-cloud-compute
+[submodule "vendor/satori/go.uuid"]
+	path = vendor/satori/go.uuid
+	url = https://github.com/satori/go.uuid.git

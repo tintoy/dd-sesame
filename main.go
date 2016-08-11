@@ -28,13 +28,19 @@ func main() {
 
 	apiClient := compute.NewClient(options.Region, options.Username, options.Password)
 
+	// If user specified network domain by name instead of Id, resolve it now.
+	err = findTargetNetworkDomainID(apiClient, &options)
+	if err != nil {
+		panic(err)
+	}
+
 	var targetRule *compute.FirewallRule
 	targetRule, err = findFirewallRuleByName(apiClient, options)
 	if err != nil {
 		panic(err)
 	}
 	if targetRule != nil {
-		if targetRule.Source.IPAddress != nil && targetRule.Source.IPAddress.Address == externalIP {
+		if !options.Delete && targetRule.Source.IPAddress != nil && targetRule.Source.IPAddress.Address == externalIP {
 			fmt.Printf("Firewall rule '%s' ('%s') is already up-to-date.\n", options.RuleName, targetRule.ID)
 
 			return
@@ -48,9 +54,13 @@ func main() {
 		fmt.Printf("Deleted existing firewall rule '%s' (Id = '%s').\n", options.RuleName, targetRule.ID)
 	}
 
+	if options.Delete {
+		return
+	}
+
 	ruleConfiguration := compute.FirewallRuleConfiguration{
 		Name:            options.RuleName,
-		NetworkDomainID: options.NetworkDomainID,
+		NetworkDomainID: options.NetworkDomain,
 		Action:          "ACCEPT_DECISIVELY",
 		Enabled:         true,
 		Protocol:        "IP",
@@ -68,12 +78,37 @@ func main() {
 	fmt.Printf("Created firewall rule '%s' (Id = '%s').\n", options.RuleName, firewallRuleID)
 }
 
+func findTargetNetworkDomainID(apiClient *compute.Client, options *programOptions) (err error) {
+	if isUUID(options.NetworkDomain) {
+		return
+	}
+
+	fmt.Printf("Looking up network domain '%s' in data centre '%s'...\n", options.NetworkDomain, options.DataCenter)
+
+	var networkDomain *compute.NetworkDomain
+	networkDomain, err = apiClient.GetNetworkDomainByName(options.NetworkDomain, options.DataCenter)
+	if err != nil {
+		return
+	}
+	if networkDomain == nil {
+		err = fmt.Errorf("No network domain named '%s' was found in data centre '%s'", options.NetworkDomain, options.DataCenter)
+
+		return
+	}
+
+	fmt.Printf("Found network domain '%s' (Id = '%s').\n", networkDomain.Name, networkDomain.ID)
+
+	options.NetworkDomain = networkDomain.ID
+
+	return
+}
+
 func findFirewallRuleByName(apiClient *compute.Client, options programOptions) (firewallRule *compute.FirewallRule, err error) {
 	page := compute.DefaultPaging()
 	page.PageSize = 50
 	for firewallRule == nil {
 		var firewallRules *compute.FirewallRules
-		firewallRules, err = apiClient.ListFirewallRules(options.NetworkDomainID, page)
+		firewallRules, err = apiClient.ListFirewallRules(options.NetworkDomain, page)
 		if err != nil {
 			return
 		}
