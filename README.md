@@ -12,15 +12,15 @@ export DD_COMPUTE_PASSWORD="my_password"
 
 Specify the target network domain by its name:
 ```
-dd-sesame dd-sesame --region AU --network Mantl2 --dc AU9 --rule me.at.home.ipv4.inbound
+dd-sesame --region AU --network Mantl2 --dc AU9 --rule me.at.home.ipv4.inbound
 ```
 
 Specify the target network domain by its Id:
 ```
-dd-sesame dd-sesame --region AU --network d35e1cf5-a8cd-48f7-b4d6-075d51fde461 --rule me.at.home.ipv4.inbound
+dd-sesame --region AU --network d35e1cf5-a8cd-48f7-b4d6-075d51fde461 --rule me.at.home.ipv4.inbound
 ```
 
 Delete the firewall rule once you're done:
 ```
-dd-sesame dd-sesame --delete --region AU --network Mantl2 --dc AU9 --rule me.at.home.ipv4.inbound
+dd-sesame --delete --region AU --network Mantl2 --dc AU9 --rule me.at.home.ipv4.inbound
 ```
