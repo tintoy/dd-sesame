@@ -17,15 +17,15 @@ type programOptions struct {
 }
 
 func (options *programOptions) Parse() bool {
-	options.Username = os.Getenv("DD_COMPUTE_USER")
+	options.Username = os.Getenv("MCP_USER")
 	if isEmpty(options.Username) {
-		fmt.Println("The 'DD_COMPUTE_USER' environment variable is not defined. Set this to your CloudControl user name.")
+		fmt.Println("The 'MCP_USER' environment variable is not defined. Set this to your CloudControl user name.")
 
 		return false
 	}
-	options.Password = os.Getenv("DD_COMPUTE_PASSWORD")
+	options.Password = os.Getenv("MCP_PASSWORD")
 	if isEmpty(options.Password) {
-		fmt.Println("The 'DD_COMPUTE_PASSWORD' environment variable is not defined. Set this to your CloudControl password.")
+		fmt.Println("The 'MCP_PASSWORD' environment variable is not defined. Set this to your CloudControl password.")
 
 		return false
 	}
