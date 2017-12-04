@@ -17,14 +17,20 @@ func main() {
 		os.Exit(2)
 	}
 
-	fmt.Println("Detecting external IP address...")
+	var (
+		externalIP string
+		err        error
+	)
+	if !options.Delete {
+		fmt.Println("Detecting external IP address...")
 
-	externalIP, err := getExternalIP()
-	if err != nil {
-		panic(err)
+		externalIP, err = getExternalIP()
+		if err != nil {
+			panic(err)
+		}
+
+		fmt.Printf("External IP address is '%s'.\n", externalIP)
 	}
-
-	fmt.Printf("External IP address is '%s'.\n", externalIP)
 
 	apiClient := compute.NewClient(options.Region, options.Username, options.Password)
 
