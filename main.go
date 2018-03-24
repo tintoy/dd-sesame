@@ -138,7 +138,7 @@ func findFirewallRuleByName(apiClient *compute.Client, options programOptions) (
 
 func getExternalIP() (externalIP string, err error) {
 	var response *http.Response
-	response, err = http.Get("http://ifconfig.co/")
+	response, err = http.Get("http://v4.ifconfig.co/")
 	if err != nil {
 		return
 	}
